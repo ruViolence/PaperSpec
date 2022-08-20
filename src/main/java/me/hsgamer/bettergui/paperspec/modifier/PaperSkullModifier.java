@@ -45,7 +45,7 @@ public class PaperSkullModifier extends ItemMetaModifier {
                     return playerProfile;
                 }
             });
-    private String headValue = "";
+    private String headValue = "Steve";
 
     @Override
     public ItemMeta modifyMeta(ItemMeta itemMeta, UUID uuid, Map<String, StringReplacer> map) {
@@ -56,9 +56,7 @@ public class PaperSkullModifier extends ItemMetaModifier {
         SkullMeta skullMeta = (SkullMeta) itemMeta;
         try {
             PlayerProfile playerProfile = CACHE.get(value);
-            if (playerProfile.isComplete()) {
-                skullMeta.setPlayerProfile(playerProfile);
-            }
+            skullMeta.setPlayerProfile(playerProfile);
         } catch (Exception e) {
             e.printStackTrace();
         }
