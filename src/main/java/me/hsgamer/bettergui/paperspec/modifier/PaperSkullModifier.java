@@ -11,8 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,9 +22,9 @@ public class PaperSkullModifier extends ItemMetaModifier {
     private static final LoadingCache<String, PlayerProfile> CACHE = CacheBuilder.newBuilder()
             .expireAfterAccess(1, MINUTES)
             .initialCapacity(10)
-            .build(new CacheLoader<String, PlayerProfile>() {
+            .build(new CacheLoader<>() {
                 @Override
-                public PlayerProfile load(@Nonnull String key) {
+                public @NotNull PlayerProfile load(@NotNull String key) {
                     PlayerProfile playerProfile;
                     if (Validate.isValidUUID(key)) {
                         UUID uuid = UUID.fromString(key);
@@ -49,11 +49,10 @@ public class PaperSkullModifier extends ItemMetaModifier {
 
     @Override
     public ItemMeta modifyMeta(ItemMeta itemMeta, UUID uuid, Map<String, StringReplacer> map) {
-        if (!(itemMeta instanceof SkullMeta)) {
+        if (!(itemMeta instanceof SkullMeta skullMeta)) {
             return itemMeta;
         }
         String value = StringReplacer.replace(headValue, uuid, map.values());
-        SkullMeta skullMeta = (SkullMeta) itemMeta;
         try {
             PlayerProfile playerProfile = CACHE.get(value);
             skullMeta.setPlayerProfile(playerProfile);
@@ -83,11 +82,10 @@ public class PaperSkullModifier extends ItemMetaModifier {
 
     @Override
     public boolean compareWithItemMeta(ItemMeta itemMeta, UUID uuid, Map<String, StringReplacer> map) {
-        if (!(itemMeta instanceof SkullMeta)) {
+        if (!(itemMeta instanceof SkullMeta skullMeta)) {
             return false;
         }
         String value = StringReplacer.replace(headValue, uuid, map.values());
-        SkullMeta skullMeta = (SkullMeta) itemMeta;
         PlayerProfile playerProfile = skullMeta.getPlayerProfile();
         if (playerProfile == null) {
             return false;

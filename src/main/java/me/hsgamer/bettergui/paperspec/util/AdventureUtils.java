@@ -9,11 +9,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AdventureUtils {
-
     private static final TextDecorationAndState ITALIC_OFF = TextDecoration.ITALIC.withState(TextDecoration.State.FALSE);
+
+    private AdventureUtils() {
+        // EMPTY
+    }
 
     @Contract(pure = true)
     public static @NotNull Component disableItalic(@NotNull Component component) {
@@ -22,7 +24,7 @@ public class AdventureUtils {
 
     @Contract(pure = true)
     public static @NotNull List<Component> disableItalic(@NotNull List<Component> componentList) {
-        return componentList.stream().map(AdventureUtils::disableItalic).collect(Collectors.toList());
+        return componentList.stream().map(AdventureUtils::disableItalic).toList();
     }
 
     public static @NotNull Component toComponent(@NotNull String mini) {
@@ -30,7 +32,7 @@ public class AdventureUtils {
     }
 
     public static @NotNull List<Component> toComponent(@NotNull List<String> miniList) {
-        return miniList.stream().map(AdventureUtils::toComponent).collect(Collectors.toList());
+        return miniList.stream().map(AdventureUtils::toComponent).toList();
     }
 
     public static @NotNull String toMiniMessage(@NotNull Component component) {
@@ -38,7 +40,7 @@ public class AdventureUtils {
     }
 
     public static @NotNull List<String> toMiniMessage(@NotNull List<Component> componentList) {
-        return componentList.stream().map(AdventureUtils::toMiniMessage).collect(Collectors.toList());
+        return componentList.stream().map(AdventureUtils::toMiniMessage).toList();
     }
 
     public static @NotNull String toPlainText(@NotNull Component component) {
@@ -46,7 +48,7 @@ public class AdventureUtils {
     }
 
     public static @NotNull List<String> toPlainText(@NotNull List<Component> componentList) {
-        return componentList.stream().map(AdventureUtils::toPlainText).collect(Collectors.toList());
+        return componentList.stream().map(AdventureUtils::toPlainText).toList();
     }
 
     public static @NotNull String stripTags(@NotNull String mini) {
@@ -54,7 +56,7 @@ public class AdventureUtils {
     }
 
     public static @NotNull List<String> stripTags(@NotNull List<String> miniList) {
-        return miniList.stream().map(AdventureUtils::stripTags).collect(Collectors.toList());
+        return miniList.stream().map(AdventureUtils::stripTags).toList();
     }
 
 }

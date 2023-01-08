@@ -15,15 +15,15 @@ public final class PaperSpec extends PluginAddon {
     public boolean onLoad() {
         return (Validate.isClassLoaded("com.destroystokyo.paper.PaperConfig") ||
                 Validate.isClassLoaded("io.papermc.paper.configuration.Configuration")
-               ) &&
-               (Validate.isClassLoaded("net.kyori.adventure.text.Component") &&
-                Validate.isClassLoaded("net.kyori.adventure.text.minimessage.MiniMessage") &&
-                Validate.isClassLoaded("net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer") &&
-                Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "lore", List.class) &&
-                Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "lore") &&
-                Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "displayName", Component.class) &&
-                Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "displayName")
-               );
+        ) &&
+                (Validate.isClassLoaded("net.kyori.adventure.text.Component") &&
+                        Validate.isClassLoaded("net.kyori.adventure.text.minimessage.MiniMessage") &&
+                        Validate.isClassLoaded("net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer") &&
+                        Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "lore", List.class) &&
+                        Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "lore") &&
+                        Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "displayName", Component.class) &&
+                        Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "displayName")
+                );
     }
 
     @Override

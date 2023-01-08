@@ -22,7 +22,6 @@ public class AdventureNameModifier extends ItemMetaModifier {
      * Set the name
      *
      * @param name the name in MiniMessage representation
-     *
      * @return {@code this} for builder chain
      */
     @Contract("_ -> this")

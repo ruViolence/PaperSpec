@@ -70,7 +70,6 @@ public class AdventureLoreModifier extends ItemMetaModifier {
      * Set the lore
      *
      * @param lore the lore
-     *
      * @return {@code this} for builder chain
      */
     @Contract("_ -> this")
@@ -82,7 +81,6 @@ public class AdventureLoreModifier extends ItemMetaModifier {
      * Add a lore
      *
      * @param lore the lore
-     *
      * @return {@code this} for builder chain
      */
     @Contract("_ -> this")
@@ -95,7 +93,6 @@ public class AdventureLoreModifier extends ItemMetaModifier {
      * Set the lore
      *
      * @param lore the lore
-     *
      * @return {@code this} for builder chain
      */
     @Contract("_ -> this")
