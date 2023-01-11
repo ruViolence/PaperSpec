@@ -22,7 +22,8 @@ public final class PaperSpec extends PluginAddon {
             return false;
         }
 
-        return Validate.isClassLoaded("net.kyori.adventure.text.minimessage.MiniMessage")
+        return Validate.isClassLoaded("com.destroystokyo.paper.profile.PlayerProfile")
+                && Validate.isClassLoaded("net.kyori.adventure.text.minimessage.MiniMessage")
                 && Validate.isClassLoaded("net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer")
                 && Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "lore", List.class)
                 && Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "lore")
