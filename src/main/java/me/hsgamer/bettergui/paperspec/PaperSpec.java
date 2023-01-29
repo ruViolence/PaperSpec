@@ -1,7 +1,12 @@
 package me.hsgamer.bettergui.paperspec;
 
+import me.hsgamer.bettergui.builder.ActionBuilder;
 import me.hsgamer.bettergui.builder.InventoryBuilder;
 import me.hsgamer.bettergui.builder.ItemModifierBuilder;
+import me.hsgamer.bettergui.paperspec.action.ComponentBarAction;
+import me.hsgamer.bettergui.paperspec.action.ComponentBroadcastAction;
+import me.hsgamer.bettergui.paperspec.action.ComponentBroadcastBarAction;
+import me.hsgamer.bettergui.paperspec.action.ComponentTellAction;
 import me.hsgamer.bettergui.paperspec.inventory.ComponentInventoryBuilder;
 import me.hsgamer.bettergui.paperspec.modifier.AdventureLoreModifier;
 import me.hsgamer.bettergui.paperspec.modifier.AdventureNameModifier;
@@ -39,5 +44,10 @@ public final class PaperSpec extends PluginAddon {
         ItemModifierBuilder.INSTANCE.register(AdventureLoreModifier::new, "mini-lore", "lore$");
 
         InventoryBuilder.INSTANCE.register(ComponentInventoryBuilder::new, "mini-title");
+
+        ActionBuilder.INSTANCE.register(ComponentBarAction::new, "component-bar", "paper-bar", "adventure-bar", "bar$");
+        ActionBuilder.INSTANCE.register(ComponentBroadcastAction::new, "component-broadcast", "paper-broadcast", "adventure-broadcast", "broadcast$");
+        ActionBuilder.INSTANCE.register(ComponentBroadcastBarAction::new, "component-broadcast-bar", "paper-broadcast-bar", "adventure-broadcast-bar", "broadcast-bar$");
+        ActionBuilder.INSTANCE.register(ComponentTellAction::new, "component-tell", "paper-tell", "adventure-tell", "tell$");
     }
 }
