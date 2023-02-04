@@ -13,18 +13,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public abstract class ComponentAction extends BaseAction {
+    protected final List<String> options;
     private final ComponentSerializer<? extends Component, ? extends Component, String> serializer;
     private final boolean trimColor;
 
     protected ComponentAction(ActionBuilder.Input input) {
         super(input);
-        if (input.option.toLowerCase().contains("mini")) {
+        options = input.getOptionAsList();
+        String type = options.isEmpty() ? "legacy" : options.get(0).toLowerCase();
+        if (type.contains("mini")) {
             serializer = MiniMessage.miniMessage();
             trimColor = true;
-        } else if (input.option.equalsIgnoreCase("json") || input.option.equalsIgnoreCase("gson")) {
+        } else if (type.equalsIgnoreCase("json") || type.equalsIgnoreCase("gson")) {
             serializer = GsonComponentSerializer.colorDownsamplingGson();
             trimColor = false;
         } else {

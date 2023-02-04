@@ -5,12 +5,19 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class ComponentBroadcastAction extends ComponentAction {
+    private final boolean isBar;
+
     public ComponentBroadcastAction(ActionBuilder.Input input) {
         super(input);
+        isBar = options.size() > 1 && options.get(1).equalsIgnoreCase("bar");
     }
 
     @Override
     protected void accept(Player player, Component component) {
-        player.getServer().sendMessage(component);
+        if (isBar) {
+            player.getServer().sendActionBar(component);
+        } else {
+            player.getServer().sendMessage(component);
+        }
     }
 }
