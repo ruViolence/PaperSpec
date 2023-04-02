@@ -3,6 +3,7 @@ package me.hsgamer.bettergui.paperspec.action;
 import me.hsgamer.bettergui.BetterGUI;
 import me.hsgamer.bettergui.api.action.BaseAction;
 import me.hsgamer.bettergui.builder.ActionBuilder;
+import me.hsgamer.hscore.bukkit.scheduler.Scheduler;
 import me.hsgamer.hscore.task.element.TaskProcess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -53,9 +54,9 @@ public abstract class ComponentAction extends BaseAction {
         }
         Component component = serializer.deserialize(replaced);
 
-        Bukkit.getScheduler().runTask(BetterGUI.getInstance(), () -> {
+        Scheduler.CURRENT.runTask(BetterGUI.getInstance(), () -> {
             accept(player, component);
             process.next();
-        });
+        }, false);
     }
 }
