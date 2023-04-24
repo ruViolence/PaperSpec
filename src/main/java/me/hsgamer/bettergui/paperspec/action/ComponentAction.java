@@ -7,7 +7,6 @@ import me.hsgamer.hscore.bukkit.scheduler.Scheduler;
 import me.hsgamer.hscore.task.element.TaskProcess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
@@ -16,10 +15,11 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 public abstract class ComponentAction extends BaseAction {
     protected final List<String> options;
-    private final ComponentSerializer<? extends Component, ? extends Component, String> serializer;
+    private final Function<String, Component> serializer;
     private final boolean trimColor;
 
     protected ComponentAction(ActionBuilder.Input input) {
@@ -27,13 +27,13 @@ public abstract class ComponentAction extends BaseAction {
         options = input.getOptionAsList();
         String type = options.isEmpty() ? "legacy" : options.get(0).toLowerCase();
         if (type.contains("mini")) {
-            serializer = MiniMessage.miniMessage();
+            serializer = MiniMessage.miniMessage()::deserialize;
             trimColor = true;
         } else if (type.equalsIgnoreCase("json") || type.equalsIgnoreCase("gson")) {
-            serializer = GsonComponentSerializer.colorDownsamplingGson();
+            serializer = GsonComponentSerializer.colorDownsamplingGson()::deserialize;
             trimColor = false;
         } else {
-            serializer = LegacyComponentSerializer.legacySection();
+            serializer = LegacyComponentSerializer.legacySection()::deserialize;
             trimColor = false;
         }
     }
@@ -52,7 +52,7 @@ public abstract class ComponentAction extends BaseAction {
         if (trimColor) {
             replaced = ChatColor.stripColor(replaced);
         }
-        Component component = serializer.deserialize(replaced);
+        Component component = serializer.apply(replaced);
 
         Scheduler.CURRENT.runTask(BetterGUI.getInstance(), () -> {
             accept(player, component);
