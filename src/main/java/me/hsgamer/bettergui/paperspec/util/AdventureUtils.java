@@ -38,8 +38,13 @@ public class AdventureUtils {
 
     public static @NotNull Component toComponent(UUID uuid, @NotNull String mini) {
         if (IS_MINI_PLACEHOLDERS_INSTALLED) {
+            TagResolver tagResolver = MiniPlaceholders.getGlobalPlaceholders();
+
             Player player = Bukkit.getPlayer(uuid);
-            TagResolver tagResolver = player != null ? MiniPlaceholders.getAudiencePlaceholders(player) : MiniPlaceholders.getGlobalPlaceholders();
+            if (player != null) {
+                tagResolver = TagResolver.resolver(tagResolver, MiniPlaceholders.getAudiencePlaceholders(player));
+            }
+
             return MiniMessage.miniMessage().deserialize(mini, tagResolver);
         }
         return MiniMessage.miniMessage().deserialize(mini);
