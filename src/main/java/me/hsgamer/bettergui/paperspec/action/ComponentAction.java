@@ -3,10 +3,10 @@ package me.hsgamer.bettergui.paperspec.action;
 import me.hsgamer.bettergui.BetterGUI;
 import me.hsgamer.bettergui.api.action.BaseAction;
 import me.hsgamer.bettergui.builder.ActionBuilder;
+import me.hsgamer.bettergui.paperspec.util.AdventureUtils;
 import me.hsgamer.hscore.bukkit.scheduler.Scheduler;
 import me.hsgamer.hscore.task.element.TaskProcess;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
@@ -15,11 +15,11 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public abstract class ComponentAction extends BaseAction {
     protected final List<String> options;
-    private final Function<String, Component> serializer;
+    private final BiFunction<UUID, String, Component> serializer;
     private final boolean trimColor;
 
     protected ComponentAction(ActionBuilder.Input input) {
@@ -27,13 +27,13 @@ public abstract class ComponentAction extends BaseAction {
         options = input.getOptionAsList();
         String type = options.isEmpty() ? "legacy" : options.get(0).toLowerCase();
         if (type.contains("mini")) {
-            serializer = MiniMessage.miniMessage()::deserialize;
+            serializer = AdventureUtils::toComponent;
             trimColor = true;
         } else if (type.equalsIgnoreCase("json") || type.equalsIgnoreCase("gson")) {
-            serializer = GsonComponentSerializer.colorDownsamplingGson()::deserialize;
+            serializer = (uuid, s) -> GsonComponentSerializer.colorDownsamplingGson().deserialize(s);
             trimColor = false;
         } else {
-            serializer = LegacyComponentSerializer.legacySection()::deserialize;
+            serializer = (uuid, s) -> LegacyComponentSerializer.legacyAmpersand().deserialize(s);
             trimColor = false;
         }
     }
@@ -52,7 +52,7 @@ public abstract class ComponentAction extends BaseAction {
         if (trimColor) {
             replaced = ChatColor.stripColor(replaced);
         }
-        Component component = serializer.apply(replaced);
+        Component component = serializer.apply(uuid, replaced);
 
         Scheduler.CURRENT.runTask(BetterGUI.getInstance(), () -> {
             accept(player, component);

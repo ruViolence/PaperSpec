@@ -1,17 +1,26 @@
 package me.hsgamer.bettergui.paperspec.util;
 
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.TextDecorationAndState;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.UUID;
 
 public class AdventureUtils {
     private static final TextDecorationAndState ITALIC_OFF = TextDecoration.ITALIC.withState(TextDecoration.State.FALSE);
+    private static final boolean IS_MINI_PLACEHOLDERS_INSTALLED;
+
+    static {
+        IS_MINI_PLACEHOLDERS_INSTALLED = Bukkit.getPluginManager().getPlugin("MiniPlaceholders") != null;
+    }
 
     private AdventureUtils() {
         // EMPTY
@@ -27,12 +36,17 @@ public class AdventureUtils {
         return componentList.stream().map(AdventureUtils::disableItalic).toList();
     }
 
-    public static @NotNull Component toComponent(@NotNull String mini) {
+    public static @NotNull Component toComponent(UUID uuid, @NotNull String mini) {
+        if (IS_MINI_PLACEHOLDERS_INSTALLED) {
+            Player player = Bukkit.getPlayer(uuid);
+            TagResolver tagResolver = player != null ? MiniPlaceholders.getAudiencePlaceholders(player) : MiniPlaceholders.getGlobalPlaceholders();
+            return MiniMessage.miniMessage().deserialize(mini, tagResolver);
+        }
         return MiniMessage.miniMessage().deserialize(mini);
     }
 
-    public static @NotNull List<Component> toComponent(@NotNull List<String> miniList) {
-        return miniList.stream().map(AdventureUtils::toComponent).toList();
+    public static @NotNull List<Component> toComponent(UUID uuid, @NotNull List<String> miniList) {
+        return miniList.stream().map(s -> toComponent(uuid, s)).toList();
     }
 
     public static @NotNull String toMiniMessage(@NotNull Component component) {
@@ -42,21 +56,4 @@ public class AdventureUtils {
     public static @NotNull List<String> toMiniMessage(@NotNull List<Component> componentList) {
         return componentList.stream().map(AdventureUtils::toMiniMessage).toList();
     }
-
-    public static @NotNull String toPlainText(@NotNull Component component) {
-        return PlainTextComponentSerializer.plainText().serialize(component);
-    }
-
-    public static @NotNull List<String> toPlainText(@NotNull List<Component> componentList) {
-        return componentList.stream().map(AdventureUtils::toPlainText).toList();
-    }
-
-    public static @NotNull String stripTags(@NotNull String mini) {
-        return MiniMessage.miniMessage().stripTags(mini);
-    }
-
-    public static @NotNull List<String> stripTags(@NotNull List<String> miniList) {
-        return miniList.stream().map(AdventureUtils::stripTags).toList();
-    }
-
 }

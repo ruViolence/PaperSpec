@@ -6,9 +6,11 @@ import me.hsgamer.hscore.common.CollectionUtils;
 import me.hsgamer.hscore.common.interfaces.StringReplacer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.Contract;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class AdventureLoreModifier extends ItemMetaModifier {
     private final List<String> lore = new ArrayList<>(); // Stored as MiniMessage representation
@@ -26,7 +28,7 @@ public class AdventureLoreModifier extends ItemMetaModifier {
 
     @Override
     public ItemMeta modifyMeta(ItemMeta meta, UUID uuid, Map<String, StringReplacer> stringReplacerMap) {
-        List<Component> lore = AdventureUtils.toComponent(getReplacedLore(uuid, stringReplacerMap));
+        List<Component> lore = AdventureUtils.toComponent(uuid, getReplacedLore(uuid, stringReplacerMap));
         List<Component> noItalic = AdventureUtils.disableItalic(lore);
         meta.lore(noItalic);
         return meta;
@@ -35,7 +37,8 @@ public class AdventureLoreModifier extends ItemMetaModifier {
     @SuppressWarnings("DataFlowIssue")
     @Override
     public void loadFromItemMeta(ItemMeta meta) {
-        setLore(AdventureUtils.toMiniMessage(meta.lore()));
+        lore.clear();
+        lore.addAll(AdventureUtils.toMiniMessage(meta.lore()));
     }
 
     @Override
@@ -51,9 +54,17 @@ public class AdventureLoreModifier extends ItemMetaModifier {
         }
 
         // Since text components are complex, we compare the plain text representation for equality
-        List<String> plainText1 = AdventureUtils.stripTags(getReplacedLore(uuid, stringReplacerMap));
-        List<String> plainText2 = AdventureUtils.toPlainText(meta.lore());
-        return plainText1.equals(plainText2);
+        List<Component> itemLore = meta.lore();
+        List<Component> compareLore = AdventureUtils.toComponent(uuid, getReplacedLore(uuid, stringReplacerMap));
+        if (itemLore.size() != compareLore.size()) {
+            return false;
+        }
+        for (int i = 0; i < itemLore.size(); i++) {
+            if (!itemLore.get(i).equals(compareLore.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -63,53 +74,7 @@ public class AdventureLoreModifier extends ItemMetaModifier {
 
     @Override
     public void loadFromObject(Object object) {
-        setLore(CollectionUtils.createStringListFromObject(object, false));
-    }
-
-    /**
-     * Set the lore
-     *
-     * @param lore the lore
-     * @return {@code this} for builder chain
-     */
-    @Contract("_ -> this")
-    public AdventureLoreModifier setLore(String... lore) {
-        return setLore(Arrays.asList(lore));
-    }
-
-    /**
-     * Add a lore
-     *
-     * @param lore the lore
-     * @return {@code this} for builder chain
-     */
-    @Contract("_ -> this")
-    public AdventureLoreModifier addLore(String lore) {
-        this.lore.addAll(Arrays.asList(lore.split("\\n")));
-        return this;
-    }
-
-    /**
-     * Set the lore
-     *
-     * @param lore the lore
-     * @return {@code this} for builder chain
-     */
-    @Contract("_ -> this")
-    public AdventureLoreModifier setLore(Collection<String> lore) {
-        clearLore();
-        this.lore.addAll(CollectionUtils.splitAll("\\n", lore));
-        return this;
-    }
-
-    /**
-     * Clear the lore
-     *
-     * @return {@code this} for builder chain
-     */
-    @Contract(" -> this")
-    public AdventureLoreModifier clearLore() {
-        this.lore.clear();
-        return this;
+        lore.clear();
+        lore.addAll(CollectionUtils.createStringListFromObject(object, false));
     }
 }

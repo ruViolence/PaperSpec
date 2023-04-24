@@ -5,7 +5,6 @@ import me.hsgamer.hscore.bukkit.item.ItemMetaModifier;
 import me.hsgamer.hscore.common.interfaces.StringReplacer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.Contract;
 
 import java.util.Map;
 import java.util.UUID;
@@ -18,21 +17,9 @@ public class AdventureNameModifier extends ItemMetaModifier {
         return "adventure-name";
     }
 
-    /**
-     * Set the name
-     *
-     * @param name the name in MiniMessage representation
-     * @return {@code this} for builder chain
-     */
-    @Contract("_ -> this")
-    public AdventureNameModifier setName(String name) {
-        this.name = name;
-        return this;
-    }
-
     @Override
     public ItemMeta modifyMeta(ItemMeta meta, UUID uuid, Map<String, StringReplacer> stringReplacerMap) {
-        Component displayName = AdventureUtils.toComponent(StringReplacer.replace(name, uuid, stringReplacerMap.values()));
+        Component displayName = AdventureUtils.toComponent(uuid, StringReplacer.replace(name, uuid, stringReplacerMap.values()));
         Component noItalic = AdventureUtils.disableItalic(displayName);
         meta.displayName(noItalic);
         return meta;
@@ -59,9 +46,9 @@ public class AdventureNameModifier extends ItemMetaModifier {
         }
 
         // Since text components are complex, we compare the plain text representation for equality
-        String plainText1 = AdventureUtils.stripTags(replaced);
-        String plainText2 = AdventureUtils.toPlainText(meta.displayName());
-        return plainText1.equals(plainText2);
+        Component displayName = meta.displayName();
+        Component compareName = AdventureUtils.toComponent(uuid, replaced);
+        return displayName.equals(compareName);
     }
 
     @Override

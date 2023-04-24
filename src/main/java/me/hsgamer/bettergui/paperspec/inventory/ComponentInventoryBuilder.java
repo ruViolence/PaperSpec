@@ -27,7 +27,7 @@ public class ComponentInventoryBuilder implements BiFunction<BukkitGUIDisplay, U
         // See: https://github.com/KyoriPowered/adventure/blob/529d407d55ca50e6dee10f5696063f97e34ae9b5/api/src/main/java/net/kyori/adventure/text/TextComponentImpl.java#L40
         String title = ChatColor.stripColor(holder.getTitle(uuid));
 
-        Component adventureTitle = AdventureUtils.toComponent(title);
+        Component adventureTitle = AdventureUtils.toComponent(uuid, title);
         return type == InventoryType.CHEST && size > 0
                 ? Bukkit.createInventory(display, BukkitGUIUtils.normalizeToChestSize(size), adventureTitle)
                 : Bukkit.createInventory(display, type, adventureTitle);
