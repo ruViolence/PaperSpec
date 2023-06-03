@@ -20,6 +20,7 @@
   <properties>
     <java.version>17</java.version>
     <project.mainClass>me.hsgamer.bettergui.paperspec.PaperSpec</project.mainClass>
+    <plugin.version>8.8</plugin.version>
   </properties>
 
   <repositories>
