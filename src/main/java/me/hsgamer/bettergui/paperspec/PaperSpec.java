@@ -9,13 +9,13 @@ import me.hsgamer.bettergui.paperspec.inventory.ComponentInventoryBuilder;
 import me.hsgamer.bettergui.paperspec.modifier.AdventureLoreModifier;
 import me.hsgamer.bettergui.paperspec.modifier.AdventureNameModifier;
 import me.hsgamer.bettergui.paperspec.modifier.PaperSkullModifier;
-import me.hsgamer.hscore.bukkit.addon.PluginAddon;
 import me.hsgamer.hscore.common.Validate;
+import me.hsgamer.hscore.expansion.common.Expansion;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.util.List;
 
-public final class PaperSpec extends PluginAddon {
+public final class PaperSpec implements Expansion {
     @Override
     public boolean onLoad() {
         Class<?> componentClass;
@@ -41,7 +41,7 @@ public final class PaperSpec extends PluginAddon {
         ItemModifierBuilder.INSTANCE.register(AdventureNameModifier::new, "mini-name", "name$");
         ItemModifierBuilder.INSTANCE.register(AdventureLoreModifier::new, "mini-lore", "lore$");
 
-        InventoryBuilder.INSTANCE.register(ComponentInventoryBuilder::new, "mini-title");
+        InventoryBuilder.INSTANCE.register(pair -> new ComponentInventoryBuilder(pair.getValue()), "mini-title");
 
         ActionBuilder.INSTANCE.register(ComponentBroadcastAction::new, "component-broadcast", "paper-broadcast", "adventure-broadcast", "broadcast$");
         ActionBuilder.INSTANCE.register(ComponentTellAction::new, "component-tell", "paper-tell", "adventure-tell", "tell$");

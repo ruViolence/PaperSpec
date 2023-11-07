@@ -1,34 +1,31 @@
 package me.hsgamer.bettergui.paperspec.modifier;
 
 import me.hsgamer.bettergui.paperspec.util.AdventureUtils;
-import me.hsgamer.hscore.bukkit.item.ItemMetaModifier;
+import me.hsgamer.hscore.bukkit.item.modifier.ItemMetaComparator;
+import me.hsgamer.hscore.bukkit.item.modifier.ItemMetaModifier;
 import me.hsgamer.hscore.common.CollectionUtils;
-import me.hsgamer.hscore.common.interfaces.StringReplacer;
+import me.hsgamer.hscore.common.StringReplacer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-public class AdventureLoreModifier extends ItemMetaModifier {
+public class AdventureLoreModifier implements ItemMetaModifier, ItemMetaComparator {
     private final List<String> lore = new ArrayList<>(); // Stored as MiniMessage representation
 
-    @Override
-    public String getName() {
-        return "adventure-lore";
-    }
-
-    private List<String> getReplacedLore(UUID uuid, Map<String, StringReplacer> stringReplacerMap) {
+    private List<String> getReplacedLore(UUID uuid, Collection<StringReplacer> stringReplacers) {
         List<String> replacedLore = new ArrayList<>(lore);
-        replacedLore.replaceAll(s -> StringReplacer.replace(s, uuid, stringReplacerMap.values()));
+        replacedLore.replaceAll(s -> StringReplacer.replace(s, uuid, stringReplacers));
         return replacedLore;
     }
 
     @Override
-    public ItemMeta modifyMeta(ItemMeta meta, UUID uuid, Map<String, StringReplacer> stringReplacerMap) {
-        List<Component> lore = AdventureUtils.toComponent(uuid, getReplacedLore(uuid, stringReplacerMap));
+    public @NotNull ItemMeta modifyMeta(ItemMeta meta, UUID uuid, @NotNull Collection<StringReplacer> stringReplacers) {
+        List<Component> lore = AdventureUtils.toComponent(uuid, getReplacedLore(uuid, stringReplacers));
         List<Component> noItalic = AdventureUtils.disableItalic(lore);
         meta.lore(noItalic);
         return meta;
@@ -36,26 +33,25 @@ public class AdventureLoreModifier extends ItemMetaModifier {
 
     @SuppressWarnings("DataFlowIssue")
     @Override
-    public void loadFromItemMeta(ItemMeta meta) {
+    public boolean loadFromItemMeta(ItemMeta meta) {
+        if (!meta.hasLore()) {
+            return false;
+        }
         lore.clear();
         lore.addAll(AdventureUtils.toMiniMessage(meta.lore()));
-    }
-
-    @Override
-    public boolean canLoadFromItemMeta(ItemMeta meta) {
-        return meta.hasLore();
+        return true;
     }
 
     @SuppressWarnings("DataFlowIssue")
     @Override
-    public boolean compareWithItemMeta(ItemMeta meta, UUID uuid, Map<String, StringReplacer> stringReplacerMap) {
+    public boolean compare(ItemMeta meta, UUID uuid, @NotNull Collection<StringReplacer> stringReplacers) {
         if (!meta.hasLore() && this.lore.isEmpty()) {
             return true;
         }
 
         // Since text components are complex, we compare the plain text representation for equality
         List<Component> itemLore = meta.lore();
-        List<Component> compareLore = AdventureUtils.toComponent(uuid, getReplacedLore(uuid, stringReplacerMap));
+        List<Component> compareLore = AdventureUtils.toComponent(uuid, getReplacedLore(uuid, stringReplacers));
         if (itemLore.size() != compareLore.size()) {
             return false;
         }

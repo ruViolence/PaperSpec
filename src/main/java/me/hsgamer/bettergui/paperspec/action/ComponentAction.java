@@ -1,6 +1,5 @@
 package me.hsgamer.bettergui.paperspec.action;
 
-import me.hsgamer.bettergui.BetterGUI;
 import me.hsgamer.bettergui.api.action.BaseAction;
 import me.hsgamer.bettergui.builder.ActionBuilder;
 import me.hsgamer.bettergui.paperspec.util.AdventureUtils;
@@ -54,9 +53,9 @@ public abstract class ComponentAction extends BaseAction {
         }
         Component component = serializer.apply(uuid, replaced);
 
-        Scheduler.CURRENT.runTask(BetterGUI.getInstance(), () -> {
+        Scheduler.current().sync().runTask(() -> {
             accept(player, component);
             process.next();
-        }, false);
+        });
     }
 }

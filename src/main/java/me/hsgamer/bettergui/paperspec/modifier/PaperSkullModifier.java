@@ -4,21 +4,22 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import me.hsgamer.hscore.bukkit.item.ItemMetaModifier;
+import me.hsgamer.hscore.bukkit.item.modifier.ItemMetaComparator;
+import me.hsgamer.hscore.bukkit.item.modifier.ItemMetaModifier;
+import me.hsgamer.hscore.common.StringReplacer;
 import me.hsgamer.hscore.common.Validate;
-import me.hsgamer.hscore.common.interfaces.StringReplacer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-public class PaperSkullModifier extends ItemMetaModifier {
+public class PaperSkullModifier implements ItemMetaModifier, ItemMetaComparator {
     private static final LoadingCache<String, PlayerProfile> CACHE = CacheBuilder.newBuilder()
             .expireAfterAccess(1, MINUTES)
             .initialCapacity(10)
@@ -48,11 +49,11 @@ public class PaperSkullModifier extends ItemMetaModifier {
     private String headValue = "Steve";
 
     @Override
-    public ItemMeta modifyMeta(ItemMeta itemMeta, UUID uuid, Map<String, StringReplacer> map) {
+    public @NotNull ItemMeta modifyMeta(@NotNull ItemMeta itemMeta, UUID uuid, @NotNull Collection<StringReplacer> stringReplacers) {
         if (!(itemMeta instanceof SkullMeta skullMeta)) {
             return itemMeta;
         }
-        String value = StringReplacer.replace(headValue, uuid, map.values());
+        String value = StringReplacer.replace(headValue, uuid, stringReplacers);
         try {
             PlayerProfile playerProfile = CACHE.get(value);
             skullMeta.setPlayerProfile(playerProfile);
@@ -63,8 +64,10 @@ public class PaperSkullModifier extends ItemMetaModifier {
     }
 
     @Override
-    public void loadFromItemMeta(ItemMeta itemMeta) {
-        SkullMeta skullMeta = (SkullMeta) itemMeta;
+    public boolean loadFromItemMeta(ItemMeta itemMeta) {
+        if (!(itemMeta instanceof SkullMeta skullMeta)) {
+            return false;
+        }
         PlayerProfile playerProfile = skullMeta.getPlayerProfile();
         if (playerProfile != null) {
             if (playerProfile.getId() != null) {
@@ -73,19 +76,15 @@ public class PaperSkullModifier extends ItemMetaModifier {
                 headValue = playerProfile.getName();
             }
         }
+        return true;
     }
 
     @Override
-    public boolean canLoadFromItemMeta(ItemMeta itemMeta) {
-        return itemMeta instanceof SkullMeta;
-    }
-
-    @Override
-    public boolean compareWithItemMeta(ItemMeta itemMeta, UUID uuid, Map<String, StringReplacer> map) {
+    public boolean compare(@NotNull ItemMeta itemMeta, UUID uuid, @NotNull Collection<StringReplacer> stringReplacers) {
         if (!(itemMeta instanceof SkullMeta skullMeta)) {
             return false;
         }
-        String value = StringReplacer.replace(headValue, uuid, map.values());
+        String value = StringReplacer.replace(headValue, uuid, stringReplacers);
         PlayerProfile playerProfile = skullMeta.getPlayerProfile();
         if (playerProfile == null) {
             return false;
@@ -97,11 +96,6 @@ public class PaperSkullModifier extends ItemMetaModifier {
             e.printStackTrace();
         }
         return false;
-    }
-
-    @Override
-    public String getName() {
-        return "paper-skull";
     }
 
     @Override
