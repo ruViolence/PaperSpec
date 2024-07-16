@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -27,8 +27,9 @@ public class PaperSkullModifier implements ItemMetaModifier, ItemMetaComparator 
                 @Override
                 public @NotNull PlayerProfile load(@NotNull String key) {
                     PlayerProfile playerProfile;
-                    if (Validate.isValidUUID(key)) {
-                        UUID uuid = UUID.fromString(key);
+                    Optional<UUID> optionalUUID = Validate.getUUID(key);
+                    if (optionalUUID.isPresent()) {
+                        UUID uuid = optionalUUID.get();
                         Player player = Bukkit.getPlayer(uuid);
                         if (player != null) {
                             playerProfile = player.getPlayerProfile();
@@ -49,11 +50,11 @@ public class PaperSkullModifier implements ItemMetaModifier, ItemMetaComparator 
     private String headValue = "Steve";
 
     @Override
-    public @NotNull ItemMeta modifyMeta(@NotNull ItemMeta itemMeta, UUID uuid, @NotNull Collection<StringReplacer> stringReplacers) {
+    public @NotNull ItemMeta modifyMeta(@NotNull ItemMeta itemMeta, UUID uuid, @NotNull StringReplacer stringReplacer) {
         if (!(itemMeta instanceof SkullMeta skullMeta)) {
             return itemMeta;
         }
-        String value = StringReplacer.replace(headValue, uuid, stringReplacers);
+        String value = stringReplacer.replaceOrOriginal(headValue, uuid);
         try {
             PlayerProfile playerProfile = CACHE.get(value);
             skullMeta.setPlayerProfile(playerProfile);
@@ -80,11 +81,11 @@ public class PaperSkullModifier implements ItemMetaModifier, ItemMetaComparator 
     }
 
     @Override
-    public boolean compare(@NotNull ItemMeta itemMeta, UUID uuid, @NotNull Collection<StringReplacer> stringReplacers) {
+    public boolean compare(@NotNull ItemMeta itemMeta, UUID uuid, @NotNull StringReplacer stringReplacer) {
         if (!(itemMeta instanceof SkullMeta skullMeta)) {
             return false;
         }
-        String value = StringReplacer.replace(headValue, uuid, stringReplacers);
+        String value = stringReplacer.replaceOrOriginal(headValue, uuid);
         PlayerProfile playerProfile = skullMeta.getPlayerProfile();
         if (playerProfile == null) {
             return false;

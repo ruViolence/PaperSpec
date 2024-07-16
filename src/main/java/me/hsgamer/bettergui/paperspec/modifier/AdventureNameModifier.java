@@ -8,7 +8,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -16,8 +15,8 @@ public class AdventureNameModifier implements ItemMetaModifier, ItemMetaComparat
     private String name; // Stored as MiniMessage representation
 
     @Override
-    public @NotNull ItemMeta modifyMeta(ItemMeta meta, UUID uuid, @NotNull Collection<StringReplacer> stringReplacers) {
-        Component displayName = AdventureUtils.toComponent(uuid, StringReplacer.replace(name, uuid, stringReplacers));
+    public @NotNull ItemMeta modifyMeta(ItemMeta meta, UUID uuid, @NotNull StringReplacer stringReplacer) {
+        Component displayName = AdventureUtils.toComponent(uuid, stringReplacer.replaceOrOriginal(name, uuid));
         Component noItalic = AdventureUtils.disableItalic(displayName);
         meta.displayName(noItalic);
         return meta;
@@ -34,8 +33,8 @@ public class AdventureNameModifier implements ItemMetaModifier, ItemMetaComparat
     }
 
     @Override
-    public boolean compare(ItemMeta meta, UUID uuid, @NotNull Collection<StringReplacer> stringReplacers) {
-        String replaced = StringReplacer.replace(this.name, uuid, stringReplacers);
+    public boolean compare(ItemMeta meta, UUID uuid, @NotNull StringReplacer stringReplacer) {
+        String replaced = stringReplacer.replaceOrOriginal(name, uuid);
         // Since text components are complex, we compare the plain text representation for equality
         Component displayName = meta.displayName();
         Component compareName = AdventureUtils.toComponent(uuid, replaced);

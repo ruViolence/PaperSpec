@@ -1,9 +1,10 @@
 package me.hsgamer.bettergui.paperspec.action;
 
-import me.hsgamer.bettergui.api.action.BaseAction;
 import me.hsgamer.bettergui.builder.ActionBuilder;
 import me.hsgamer.bettergui.paperspec.util.AdventureUtils;
-import me.hsgamer.hscore.bukkit.scheduler.Scheduler;
+import me.hsgamer.bettergui.util.SchedulerUtil;
+import me.hsgamer.hscore.action.common.Action;
+import me.hsgamer.hscore.common.StringReplacer;
 import me.hsgamer.hscore.task.element.TaskProcess;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -16,13 +17,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
-public abstract class ComponentAction extends BaseAction {
+public abstract class ComponentAction implements Action {
+    protected final String value;
     protected final List<String> options;
     private final BiFunction<UUID, String, Component> serializer;
     private final boolean trimColor;
 
     protected ComponentAction(ActionBuilder.Input input) {
-        super(input);
+        this.value = input.getValue();
         options = input.getOptionAsList();
         String type = options.isEmpty() ? "legacy" : options.get(0).toLowerCase();
         if (type.contains("mini")) {
@@ -40,20 +42,20 @@ public abstract class ComponentAction extends BaseAction {
     protected abstract void accept(Player player, Component component);
 
     @Override
-    public void accept(UUID uuid, TaskProcess process) {
+    public void apply(UUID uuid, TaskProcess process, StringReplacer stringReplacer) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             process.next();
             return;
         }
 
-        String replaced = getReplacedString(uuid);
+        String replaced = stringReplacer.replaceOrOriginal(value, uuid);
         if (trimColor) {
             replaced = ChatColor.stripColor(replaced);
         }
         Component component = serializer.apply(uuid, replaced);
 
-        Scheduler.current().sync().runTask(() -> {
+        SchedulerUtil.global().run(() -> {
             accept(player, component);
             process.next();
         });
