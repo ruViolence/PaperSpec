@@ -4,6 +4,7 @@ import me.hsgamer.bettergui.paperspec.util.AdventureUtils;
 import me.hsgamer.hscore.bukkit.gui.BukkitGUIDisplay;
 import me.hsgamer.hscore.bukkit.gui.BukkitGUIHolder;
 import me.hsgamer.hscore.bukkit.gui.BukkitGUIUtils;
+import me.hsgamer.hscore.common.MapUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
@@ -18,7 +19,9 @@ public class ComponentInventoryBuilder implements Function<BukkitGUIDisplay, Inv
     private final String title;
 
     public ComponentInventoryBuilder(Map<String, Object> menuSettings) {
-        this.title = Objects.toString(menuSettings.get("title"), "");
+        this.title = MapUtils.getOptional(menuSettings, "name", "title")
+                .map(Objects::toString)
+                .orElse("");
     }
 
     @Override
