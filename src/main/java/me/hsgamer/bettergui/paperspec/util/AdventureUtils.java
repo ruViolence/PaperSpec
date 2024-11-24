@@ -1,6 +1,7 @@
 package me.hsgamer.bettergui.paperspec.util;
 
 import io.github.miniplaceholders.api.MiniPlaceholders;
+import me.hsgamer.bettergui.paperspec.PaperSpec;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.TextDecorationAndState;
@@ -42,7 +43,7 @@ public class AdventureUtils {
 
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
-                tagResolver = TagResolver.resolver(tagResolver, MiniPlaceholders.getAudiencePlaceholders(player));
+                tagResolver = TagResolver.resolver(tagResolver, MiniPlaceholders.getAudiencePlaceholders(PaperSpec.getAudiences().player(player)));
             }
 
             return MiniMessage.miniMessage().deserialize(mini, tagResolver);

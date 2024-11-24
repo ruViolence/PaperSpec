@@ -1,5 +1,6 @@
 package me.hsgamer.bettergui.paperspec;
 
+import me.hsgamer.bettergui.BetterGUI;
 import me.hsgamer.bettergui.builder.ActionBuilder;
 import me.hsgamer.bettergui.builder.InventoryBuilder;
 import me.hsgamer.bettergui.builder.ItemModifierBuilder;
@@ -11,32 +12,33 @@ import me.hsgamer.bettergui.paperspec.modifier.AdventureNameModifier;
 import me.hsgamer.bettergui.paperspec.modifier.PaperSkullModifier;
 import me.hsgamer.hscore.common.Validate;
 import me.hsgamer.hscore.expansion.common.Expansion;
-import org.bukkit.inventory.InventoryHolder;
-
-import java.util.List;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.jetbrains.annotations.NotNull;
 
 public final class PaperSpec implements Expansion {
+    private static @NotNull BukkitAudiences audiences;
+
+    public static BukkitAudiences getAudiences() {
+        return audiences;
+    }
+
     @Override
     public boolean onLoad() {
-        Class<?> componentClass;
         try {
-            componentClass = Class.forName("net.kyori.adventure.text.Component");
+            Class.forName("net.kyori.adventure.text.Component");
         } catch (ClassNotFoundException e) {
             return false;
         }
 
         return Validate.isClassLoaded("com.destroystokyo.paper.profile.PlayerProfile")
                 && Validate.isClassLoaded("net.kyori.adventure.text.minimessage.MiniMessage")
-                && Validate.isClassLoaded("net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer")
-                && Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "lore", List.class)
-                && Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "lore")
-                && Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "displayName", componentClass)
-                && Validate.isMethodLoaded("org.bukkit.inventory.meta.ItemMeta", "displayName")
-                && Validate.isMethodLoaded("org.bukkit.Bukkit", "createInventory", InventoryHolder.class, int.class, componentClass);
+                && Validate.isClassLoaded("net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer");
     }
 
     @Override
     public void onEnable() {
+        audiences = BukkitAudiences.builder(BetterGUI.getInstance()).build();
+        
         ItemModifierBuilder.INSTANCE.register(PaperSkullModifier::new, "paper-skull", "paper-head", "skull$", "head$");
         ItemModifierBuilder.INSTANCE.register(AdventureNameModifier::new, "mini-name", "name$");
         ItemModifierBuilder.INSTANCE.register(AdventureLoreModifier::new, "mini-lore", "lore$");

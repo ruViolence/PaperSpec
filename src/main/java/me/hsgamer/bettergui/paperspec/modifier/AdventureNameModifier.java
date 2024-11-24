@@ -5,6 +5,7 @@ import me.hsgamer.hscore.bukkit.item.modifier.ItemMetaComparator;
 import me.hsgamer.hscore.bukkit.item.modifier.ItemMetaModifier;
 import me.hsgamer.hscore.common.StringReplacer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +19,7 @@ public class AdventureNameModifier implements ItemMetaModifier, ItemMetaComparat
     public @NotNull ItemMeta modifyMeta(ItemMeta meta, UUID uuid, @NotNull StringReplacer stringReplacer) {
         Component displayName = AdventureUtils.toComponent(uuid, stringReplacer.replaceOrOriginal(name, uuid));
         Component noItalic = AdventureUtils.disableItalic(displayName);
-        meta.displayName(noItalic);
+        meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(noItalic));
         return meta;
     }
 
@@ -28,7 +29,7 @@ public class AdventureNameModifier implements ItemMetaModifier, ItemMetaComparat
         if (!meta.hasDisplayName()) {
             return false;
         }
-        this.name = AdventureUtils.toMiniMessage(meta.displayName());
+        this.name = AdventureUtils.toMiniMessage(LegacyComponentSerializer.legacySection().deserialize(meta.getDisplayName()));
         return true;
     }
 
@@ -36,7 +37,7 @@ public class AdventureNameModifier implements ItemMetaModifier, ItemMetaComparat
     public boolean compare(ItemMeta meta, UUID uuid, @NotNull StringReplacer stringReplacer) {
         String replaced = stringReplacer.replaceOrOriginal(name, uuid);
         // Since text components are complex, we compare the plain text representation for equality
-        Component displayName = meta.displayName();
+        Component displayName = LegacyComponentSerializer.legacySection().deserialize(meta.getDisplayName());
         Component compareName = AdventureUtils.toComponent(uuid, replaced);
         return Objects.equals(displayName, compareName);
     }

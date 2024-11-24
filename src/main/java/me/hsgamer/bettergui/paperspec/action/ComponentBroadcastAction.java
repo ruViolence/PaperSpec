@@ -1,6 +1,7 @@
 package me.hsgamer.bettergui.paperspec.action;
 
 import me.hsgamer.bettergui.builder.ActionBuilder;
+import me.hsgamer.bettergui.paperspec.PaperSpec;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
@@ -15,9 +16,9 @@ public class ComponentBroadcastAction extends ComponentAction {
     @Override
     protected void accept(Player player, Component component) {
         if (isBar) {
-            player.getServer().sendActionBar(component);
+            PaperSpec.getAudiences().player(player).sendActionBar(component);
         } else {
-            player.getServer().sendMessage(component);
+            PaperSpec.getAudiences().player(player).sendMessage(component);
         }
     }
 }

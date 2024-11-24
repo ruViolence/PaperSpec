@@ -6,6 +6,7 @@ import me.hsgamer.hscore.bukkit.item.modifier.ItemMetaModifier;
 import me.hsgamer.hscore.common.CollectionUtils;
 import me.hsgamer.hscore.common.StringReplacer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +27,7 @@ public class AdventureLoreModifier implements ItemMetaModifier, ItemMetaComparat
     public @NotNull ItemMeta modifyMeta(ItemMeta meta, UUID uuid, @NotNull StringReplacer stringReplacer) {
         List<Component> lore = AdventureUtils.toComponent(uuid, getReplacedLore(uuid, stringReplacer));
         List<Component> noItalic = AdventureUtils.disableItalic(lore);
-        meta.lore(noItalic);
+        meta.setLore(noItalic.stream().map(c -> LegacyComponentSerializer.legacySection().serialize(c)).toList());
         return meta;
     }
 
@@ -37,7 +38,7 @@ public class AdventureLoreModifier implements ItemMetaModifier, ItemMetaComparat
             return false;
         }
         lore.clear();
-        lore.addAll(AdventureUtils.toMiniMessage(meta.lore()));
+        lore.addAll(AdventureUtils.toMiniMessage(meta.getLore().stream().map(s -> (Component) LegacyComponentSerializer.legacySection().deserialize(s)).toList()));
         return true;
     }
 
@@ -49,7 +50,7 @@ public class AdventureLoreModifier implements ItemMetaModifier, ItemMetaComparat
         }
 
         // Since text components are complex, we compare the plain text representation for equality
-        List<Component> itemLore = meta.lore();
+        List<Component> itemLore = meta.getLore().stream().map(s -> (Component) LegacyComponentSerializer.legacySection().deserialize(s)).toList();
         List<Component> compareLore = AdventureUtils.toComponent(uuid, getReplacedLore(uuid, stringReplacer));
         if (itemLore.size() != compareLore.size()) {
             return false;

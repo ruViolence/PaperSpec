@@ -6,6 +6,7 @@ import me.hsgamer.hscore.bukkit.gui.BukkitGUIHolder;
 import me.hsgamer.hscore.bukkit.gui.BukkitGUIUtils;
 import me.hsgamer.hscore.common.MapUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -32,7 +33,7 @@ public class ComponentInventoryBuilder implements Function<BukkitGUIDisplay, Inv
         int size = holder.getSize();
         Component adventureTitle = AdventureUtils.toComponent(uuid, title);
         return type == InventoryType.CHEST && size > 0
-                ? Bukkit.createInventory(display, BukkitGUIUtils.normalizeToChestSize(size), adventureTitle)
-                : Bukkit.createInventory(display, type, adventureTitle);
+                ? Bukkit.createInventory(display, BukkitGUIUtils.normalizeToChestSize(size), LegacyComponentSerializer.legacySection().serialize(adventureTitle))
+                : Bukkit.createInventory(display, type, LegacyComponentSerializer.legacySection().serialize(adventureTitle));
     }
 }
